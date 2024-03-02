@@ -1,0 +1,38 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Stack Monitoring DevOps Wilton 
+
+Resources:
+  # Inicio do Recurso SG
+  MonitoringSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupDescription: Security group for monitoring Wilton
+      SecurityGroupIngress: 
+        - IpProtocol: tcp 
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp 
+          FromPort: 443 
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+  
+  # Inicio do recurso EC2
+  MonitoringInstance: 
+    Type: AWS::EC2::Instance
+    Properties: 
+      ImageId: "ami-03c951bbe993ea087"
+      InstanceType: t2.micro
+      SecurityGroups: 
+        - !Ref MonitoringSG
+      #IamInstanceProfile:
+      UserData: 
+        Fn::Base64: |
+          #!/bin/bash
+          yum update -y 
+          amazon-linux-extras install docker 
+          service docker start 
+          usermod -a -G docker ec2-user
+
+
